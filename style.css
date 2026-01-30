@@ -12,23 +12,77 @@ body {
 
 /* Header */
 header {
-  background: linear-gradient(135deg, #1f2933, #111827);
+  background:
+    radial-gradient(
+      1200px circle at top left,
+      rgba(59,130,246,0.25),
+      transparent 60%
+    ),
+    radial-gradient(
+      800px circle at bottom right,
+      rgba(16,185,129,0.18),
+      transparent 55%
+    ),
+    linear-gradient(135deg, #020617, #111827 45%, #020617);
+  
   color: white;
-  padding: 28px 20px;
+  padding: 42px 20px 38px;
   text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
+/* subtle noise overlay (optional premium touch) */
+header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    rgba(255,255,255,0.04) 1px,
+    transparent 1px
+  );
+  background-size: 3px 3px;
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* Title */
 header h1 {
   margin: 0;
-  font-size: 26px;
-  letter-spacing: 0.5px;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-shadow:
+    0 2px 12px rgba(0,0,0,0.4),
+    0 0 24px rgba(59,130,246,0.15);
 }
 
+/* Subtitle */
 header p {
-  margin-top: 6px;
-  font-size: 14px;
-  opacity: 0.85;
+  margin-top: 10px;
+  font-size: 14.5px;
+  font-weight: 500;
+  opacity: 0.9;
+  color: #d1d5db;
 }
+
+/* Optional divider glow */
+header::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(59,130,246,0.6),
+    rgba(16,185,129,0.6),
+    transparent
+  );
+}
+
 
 /* Main layout */
 main {
