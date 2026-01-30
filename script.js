@@ -1,23 +1,40 @@
+// Get table body
 const stockTable = document.querySelector("#stockTable tbody");
-const API = "https://supplychain-management-system.onrender.com/api/stock";
 
-fetch(API)
-  .then(res => res.json())
-  .then(items => items.forEach(addStockRow));
+// Fetch stock data from backend
+fetch("http://localhost:5000/api/stock")
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Failed to fetch stock data");
+    }
+    return response.json();
+  })
+  .then(stocks => {
+    stockTable.innerHTML = "";
+    stocks.forEach(stock => addStockRow(stock));
+  })
+  .catch(error => {
+    console.error("Error loading stock data:", error);
+  });
 
-function formatDate(date) {
-  return new Date(date).toLocaleDateString("en-GB");
+// Format date as DD/MM/YYYY
+function formatDate(dateStr) {
+  if (!dateStr) return "-";
+  return new Date(dateStr).toLocaleDateString("en-GB");
 }
 
-function addStockRow(item) {
+// Add a row to the inventory table
+function addStockRow(stock) {
   const row = document.createElement("tr");
+
   row.innerHTML = `
-    <td>${item.name}</td>
-    <td>${item.currentStock}/${item.totalStock}</td>
-    <td>${formatDate(item.arrivalDate)}</td>
-    <td>${formatDate(item.expiryDate)}</td>
-    <td>${item.daysToExpiry}</td>
-    <td>₹${item.price}</td>
+    <td>${stock.name || "-"}</td>
+    <td>${stock.currentStock}/${stock.totalStock}</td>
+    <td>${formatDate(stock.arrivalDate)}</td>
+    <td>${formatDate(stock.expiryDate)}</td>
+    <td>${stock.daysToExpiry}</td>
+    <td>₹${stock.price}</td>
   `;
+
   stockTable.appendChild(row);
 }

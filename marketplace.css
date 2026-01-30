@@ -54,27 +54,29 @@ h2 {
 .card-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 18px;
+  gap: 20px;
 }
 
 /* Card */
 .card {
   background: white;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 18px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  border: 1px solid #e5e7eb;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+  transform: translateY(-5px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.14);
 }
 
 /* Card content */
 .card h3 {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   font-size: 18px;
+  font-weight: 600;
 }
 
 .card p {
@@ -91,25 +93,44 @@ h2 {
 
 .price {
   color: #16a34a;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
 }
 
+/* Discount emphasis */
+.card .price::before {
+  content: "Now ";
+  font-size: 13px;
+  font-weight: 500;
+  color: #15803d;
+}
+
 /* Status badge */
-.card p:last-child {
+.card .status {
   display: inline-block;
-  margin-top: 10px;
-  padding: 4px 10px;
+  margin-top: 12px;
+  padding: 5px 12px;
   border-radius: 999px;
-  background: #e0f2fe;
+  background: #ecfeff;
   color: #0369a1;
   font-size: 12px;
   font-weight: 600;
+}
+
+/* Optional subtle divider */
+.card hr {
+  border: none;
+  border-top: 1px dashed #e5e7eb;
+  margin: 12px 0;
 }
 
 /* Responsive */
 @media (max-width: 600px) {
   header h1 {
     font-size: 22px;
+  }
+
+  .price {
+    font-size: 18px;
   }
 }

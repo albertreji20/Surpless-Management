@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Marketplace</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="marketplace.css" />
 </head>
 <body>
 
@@ -14,7 +14,9 @@
 
 <main>
 
-  <a href="index.html">← Back to Dashboard</a>
+  <section style="margin-bottom:20px;">
+    <a href="index.html">← Back to Dashboard</a>
+  </section>
 
   <section>
     <h2>Available Items</h2>
@@ -24,34 +26,41 @@
 </main>
 
 <script>
-const API = "https://supplychain-management-system.onrender.com/api/stock";
-const marketplace = document.getElementById("marketplace");
+  const marketplace = document.getElementById("marketplace");
 
-fetch(API)
-  .then(res => res.json())
-  .then(items => {
-    const discounted = items.filter(
-      i => i.finalPrice < i.price && i.currentStock > 0
-    );
+  fetch("http://localhost:5000/api/stock")
+    .then(res => res.json())
+    .then(items => {
+      const discounted = items.filter(
+        item => item.finalPrice < item.price && item.currentStock > 0
+      );
 
-    if (!discounted.length) {
-      marketplace.innerHTML = "<p>No discounted items available.</p>";
-      return;
-    }
+      if (discounted.length === 0) {
+        marketplace.innerHTML = "<p>No discounted items available.</p>";
+        return;
+      }
 
-    discounted.forEach(item => {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <h3>${item.name}</h3>
-        <p>Stock: ${item.currentStock}</p>
-        <p class="old-price">₹${item.price}</p>
-        <p class="price">₹${item.finalPrice}</p>
-        <p>${item.status}</p>
-      `;
-      marketplace.appendChild(card);
+      discounted.forEach(addCard);
+    })
+    .catch(err => {
+      console.error(err);
+      marketplace.innerHTML = "<p>Error loading marketplace.</p>";
     });
-  });
+
+  function addCard(item) {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <h3>${item.name}</h3>
+      <p>Available: ${item.currentStock}</p>
+      <p class="old-price">₹${item.price}</p>
+      <p class="price">₹${item.finalPrice}</p>
+      <p>${item.status}</p>
+    `;
+
+    marketplace.appendChild(card);
+  }
 </script>
 
 </body>
