@@ -7,51 +7,52 @@
 </head>
 <body>
 
-  <header>
-    <h1>Surplus Marketplace</h1>
-    <p>Discounted items near expiry</p>
-  </header>
+<header>
+  <h1>Surplus Marketplace</h1>
+  <p>Discounted items near expiry</p>
+</header>
 
-  <main>
+<main>
 
-    <section style="margin-bottom: 20px;">
-      <a href="index.html">← Back to Dashboard</a>
-    </section>
+  <a href="index.html">← Back to Dashboard</a>
 
-    <section>
-      <h2>Available Items</h2>
-      <div id="marketplace" class="card-container"></div>
-    </section>
+  <section>
+    <h2>Available Items</h2>
+    <div id="marketplace" class="card-container"></div>
+  </section>
 
-  </main>
+</main>
 
-  <script>
-    const marketplace = document.getElementById("marketplace");
+<script>
+const API = "https://supplychain-management-system.onrender.com/api/stock";
+const marketplace = document.getElementById("marketplace");
 
-    fetch("http://localhost:5000/api/stock")
-      .then(res => res.json())
-      .then(items => {
-        items
-          .filter(item => item.route === "Marketplace")
-          .forEach(item => addCard(item));
-      });
+fetch(API)
+  .then(res => res.json())
+  .then(items => {
+    const discounted = items.filter(
+      i => i.finalPrice < i.price && i.currentStock > 0
+    );
 
-    function addCard(item) {
+    if (!discounted.length) {
+      marketplace.innerHTML = "<p>No discounted items available.</p>";
+      return;
+    }
+
+    discounted.forEach(item => {
       const card = document.createElement("div");
       card.className = "card";
-
       card.innerHTML = `
         <h3>${item.name}</h3>
-        <p>Stock Available: ${item.currentStock}</p>
+        <p>Stock: ${item.currentStock}</p>
         <p class="old-price">₹${item.price}</p>
         <p class="price">₹${item.finalPrice}</p>
-        <p>Status: ${item.status}</p>
-        
+        <p>${item.status}</p>
       `;
-
       marketplace.appendChild(card);
-    }
-  </script>
+    });
+  });
+</script>
 
 </body>
 </html>
