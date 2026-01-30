@@ -149,3 +149,12 @@ app.get("/api/stock", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+// Delete stock
+app.delete("/api/stock/:id", async (req, res) => {
+  try {
+    await Stock.findByIdAndDelete(req.params.id);
+    res.json({ message: "Stock deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
