@@ -1,15 +1,10 @@
 const stockTable = document.querySelector("#stockTable tbody");
-const donations = document.getElementById("donations");
 
 fetch("http://localhost:5000/api/stock")
   .then(res => res.json())
   .then(items => {
     items.forEach(item => {
       addStockRow(item);
-
-      if (item.route === "NGO") {
-        addDonation(item);
-      }
     });
   })
   .catch(err => {
@@ -18,7 +13,7 @@ fetch("http://localhost:5000/api/stock")
 
 function formatDate(dateStr) {
   const d = new Date(dateStr);
-  return d.toLocaleDateString("en-GB"); // DD/MM/YYYY
+  return d.toLocaleDateString("en-GB");
 }
 
 function addStockRow(item) {
@@ -30,17 +25,10 @@ function addStockRow(item) {
     <td>${formatDate(item.arrivalDate)}</td>
     <td>${formatDate(item.expiryDate)}</td>
     <td>${item.daysToExpiry}</td>
-    <td>₹${item.marketValue}</td>
-    <td>₹${item.finalPrice}</td>
-    <td>${item.status}</td>
-    <td>${item.route}</td>
+    <td>₹${item.price}</td>
+
+    
   `;
 
   stockTable.appendChild(row);
-}
-
-function addDonation(item) {
-  const li = document.createElement("li");
-  li.textContent = `${item.name} → Routed to NGO`;
-  donations.appendChild(li);
 }

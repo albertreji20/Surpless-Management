@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Add Stock</title>
+  <title>Stock Manager</title>
 
   <style>
     body {
@@ -12,15 +12,16 @@
     }
 
     h2 {
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
-    form {
+    form, .stock-list {
       background: white;
       padding: 20px;
-      max-width: 420px;
+      max-width: 700px;
       border-radius: 6px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
     }
 
     label {
@@ -36,7 +37,7 @@
     }
 
     button {
-      margin-top: 20px;
+      margin-top: 15px;
       background: #2563eb;
       color: white;
       border: none;
@@ -47,9 +48,32 @@
       background: #1e40af;
     }
 
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .delete-btn {
+      background: #dc2626;
+      padding: 6px 10px;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background: #991b1b;
+    }
+
     a {
-      display: inline-block;
-      margin-top: 15px;
       text-decoration: none;
       color: #2563eb;
     }
@@ -57,23 +81,22 @@
 </head>
 <body>
 
-  <h2>Add Stock to Inventory</h2>
+  <h2>Add Stock</h2>
 
   <form id="stockForm">
-
     <label>Item Name</label>
-    <input type="text" id="name" placeholder="e.g. Tomatoes" required />
+    <input type="text" id="name" required />
 
-    <label>Total Stock (initial)</label>
-    <input type="number" id="totalStock" placeholder="e.g. 100" required />
+    <label>Total Stock</label>
+    <input type="number" id="totalStock" required />
 
-    <label>Current Stock (remaining)</label>
-    <input type="number" id="currentStock" placeholder="e.g. 70" required />
+    <label>Current Stock</label>
+    <input type="number" id="currentStock" required />
 
     <label>Unit Price (₹)</label>
-    <input type="number" id="price" placeholder="e.g. 40" required />
+    <input type="number" id="price" required />
 
-    <label>Arrival Date (stock entered store)</label>
+    <label>Arrival Date</label>
     <input type="date" id="arrivalDate" required />
 
     <label>Expiry Date</label>
@@ -82,40 +105,91 @@
     <button type="submit">Save Stock</button>
   </form>
 
-  <a href="index.html">⬅ Back to Dashboard</a>
+  <div class="stock-list">
+    <h2>Existing Stocks</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Stock</th>
+          <th>Price</th>
+          <th>Expiry</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="stockTable"></tbody>
+    </table>
+  </div>
+
+
 
   <script>
     const form = document.getElementById("stockForm");
+    const stockTable = document.getElementById("stockTable");
 
+    // Add stock
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const stockData = {
-        name: document.getElementById("name").value,
-        totalStock: Number(document.getElementById("totalStock").value),
-        currentStock: Number(document.getElementById("currentStock").value),
-        price: Number(document.getElementById("price").value),
-        arrivalDate: document.getElementById("arrivalDate").value,
-        expiryDate: document.getElementById("expiryDate").value
+        name: name.value,
+        totalStock: Number(totalStock.value),
+        currentStock: Number(currentStock.value),
+        price: Number(price.value),
+        arrivalDate: arrivalDate.value,
+        expiryDate: expiryDate.value
       };
 
-      try {
-        const res = await fetch("http://localhost:5000/api/stock", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(stockData)
-        });
+      await fetch("http://localhost:5000/api/stock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(stockData)
+      });
 
-        if (!res.ok) throw new Error("Failed");
-
-        alert("Stock added successfully ✅");
-        form.reset();
-
-      } catch (err) {
-        alert("Error adding stock ❌");
-        console.error(err);
-      }
+      form.reset();
+      loadStocks();
     });
+
+    // Load stocks
+    async function loadStocks() {
+      const res = await fetch("http://localhost:5000/api/stock");
+      const stocks = await res.json();
+
+      stockTable.innerHTML = "";
+
+      stocks.forEach(stock => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${stock.name}</td>
+          <td>${stock.currentStock}/${stock.totalStock}</td>
+          <td>₹${stock.price}</td>
+          <td>${new Date(stock.expiryDate).toLocaleDateString()}</td>
+          <td>
+            <button class="delete-btn" onclick="deleteStock('${stock._id}')">
+              Delete
+            </button>
+          </td>
+        `;
+
+        stockTable.appendChild(row);
+      });
+    }
+
+    // Delete stock
+    async function deleteStock(id) {
+      if (!confirm("Delete this stock?")) return;
+
+      await fetch(`http://localhost:5000/api/stock/${id}`, {
+        method: "DELETE"
+      });
+
+      loadStocks();
+    }
+
+    // Initial load
+    loadStocks();
   </script>
 
 </body>
